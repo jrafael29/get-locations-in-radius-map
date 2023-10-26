@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "ioredis": "^5.3.2",
-    "redis": "^4.6.10",
     "socket.io": "^4.7.2"
   }
 }
