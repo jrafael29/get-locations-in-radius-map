@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+  </head>
+  <body>
+    <div style="height: 100vh; width: 100vw" id="map"></div>
+
+    <script type="module">
+      import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+      const socket = io("ws://127.0.0.1:3010", {
+        transports: ["websocket"],
+      });
+      const locations = {
+        myself: {
+          lat: -8.235064287686178,
+          lng: -35.74797364584551,
+        },
+        center: {
+          lat: -8.235010406577288,
+          lng: -35.75246397524217,
+        },
+      };
+      var markers = {};
+
+      // const route = [
+      //   { lat: -8.23506762504849, lng: -35.74797490608884 },
+      //   { lat: -8.234849302928493, lng: -35.74792219714653 },
+      //   { lat: -8.234770088678193, lng: -35.74820135932249 },
+      //   { lat: -8.234690874412054, lng: -35.748437573471385 },
+      //   { lat: -8.234596203682928, lng: -35.74874797057613 },
+      //   { lat: -8.234402998043072, lng: -35.74917354648075 },
+      //   { lat: -8.234118644965086, lng: -35.74963651285048 },
+      //   { lat: -8.233987258654308, lng: -35.75010465691112 },
+      //   { lat: -8.234043953235371, lng: -35.75056293779733 },
+      //   { lat: -8.23424592761446, lng: -35.75109282507202 },
+      //   { lat: -8.234454988705346, lng: -35.75160123043016 },
+      //   { lat: -8.23479161226376, lng: -35.75164061394382 },
+      //   { lat: -8.234912088006245, lng: -35.75198790496808 },
+      //   { lat: -8.234968782454896, lng: -35.75233519595217 },
+      //   { lat: -8.234720744182173, lng: -35.75243902521545 },
+      //   { lat: -8.234625072235437, lng: -35.75264668374201 },
+      //   { lat: -8.23476680844456, lng: -35.752890145462814 },
+      //   { lat: -8.235021933493108, lng: -35.75281853907434 },
+      //   { lat: -8.235404620757652, lng: -35.75275767364415 },
+      // ];
+
+      // async function moveMarkersOnRoute(route) {
+      //   for (const location of route) {
+      //     await new Promise((resolve) => {
+      //       setTimeout(() => {
+      //         moveMarkerByID(1, location.lat, location.lng);
+      //         resolve();
+      //       }, 1000);
+      //     });
+      //   }
+      // }
+      // moveMarkersOnRoute(route);
+
+      //   setTimeout(() => {
+      //     moveMarkerByID(1, route[1].lat, route[1].lng);
+      //     setTimeout(() => {
+      //       moveMarkerByID(1, route[2].lat, route[2].lng);
+      //       setTimeout(() => {
+      //         moveMarkerByID(1, route[3].lat, route[3].lng);
+      //         setTimeout(() => {
+      //           moveMarkerByID(1, route[4].lat, route[4].lng);
+      //         }, 1000);
+      //       }, 1000);
+      //     }, 1000);
+      //   }, 1000);
+
+      socket.on("connect", (data) => {
+        console.log("socket conectado");
+        socket.emit("register", {
+          id: 1,
+          name: "jrafael",
+          lat: '-8.234625072235437', 
+          lng: '-35.75264668374201'
+        });
+
+        socket.emit('get-players-around', {
+          lat: -8.234118644965086, 
+          lng: -35.74963651285048,
+          radiusInKm: 10
+        })
+
+        socket.on('players-around', (playersData) => {
+            console.log("players perto: ", data)
+            playersData.forEach((data, index, array) => {
+
+                addMaker({
+                id: data.id,
+                lat: data.lat,
+                lng: data.lng,
+                name: data.id,
+            });
+            })
+
+
+            
+
+        })
+      });
+
+      var map = L.map("map").setView(
+        [locations.myself.lat, locations.myself.lng],
+        18
+      );
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+      }).addTo(map);
+
+      function addMaker({ lat, lng, name, id }) {
+        var marker = L.marker([lat, lng])
+          .addTo(map)
+          .bindPopup(`${name}`)
+          .openPopup();
+
+        markers[id] = marker;
+      }
+
+      function moveMarkerByID(id, lat, lng) {
+        if (markers[id]) {
+          // Atualize as coordenadas do marcador
+          markers[id].setLatLng([lat, lng]);
+        }
+      }
+
+      socket.on("add-marker", (data) => {
+        console.log("novo market", data);
+        if (data.lng && data.lat) {
+          addMaker({
+            id: data.id,
+            lat: data.lat,
+            lng: data.lng,
+            name: data.name,
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

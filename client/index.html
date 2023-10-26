@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js" integrity="sha512-OFs3W4DIZ5ZkrDhBFtsCP6JXtMEDGmhl0QPlmWYBJay40TT1n3gt2Xuw8Pf/iezgW9CdabjkNChRqozl/YADmg==" crossorigin="anonymous" referrerpolicy="no-referrer" ></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  </head>
+  <body>
+    <div class="container">
+
+
+    <div class="d-flex gap-5 mt-5">
+      <div style="height: 50vh; width: 50vw" id="map"></div>
+      <div class="">
+        <form action="">
+          <div class="form-group">
+            <label for="rangekm" class="">Selecione um km</label>
+            <select
+              name="rangekm"
+              id="rangekm"
+              class="form-select"
+            >
+            <option selected  >Selecione um raio</option>
+              <option value="1">1KM</option>
+              <option value="2">2KM</option>
+              <option value="20">20KM</option>
+              <option value="50">50KM</option>
+            </select>
+          </div>
+          <hr />
+          <div class="form-group">
+            <label for="typeservice" class="">Selecione o tipo de serviço</label>
+            <select
+              name="typeservice"
+              id="typeservice"
+              class="form-select"
+            >
+            <option selected >Selecione o que deseja visualizar</option>
+              <option value="1">Ver Taxis Disponiveis</option>
+              <option value="2">Ver Mototaxis Disponiveis</option>
+              <option value="3">Ver Onibus Disponiveis</option>
+              <option value="4">Ver Lojas Disponiveis</option>
+            </select>
+          </div>
+          <hr />
+          <div class="border border-2 border-secondary p-2">
+            <h2>Registrar localidade.</h2>
+            <div class="form-group">
+              <label class="form-label" for="lat">latitude</label>
+              <input class="form-control" type="text" name="" id="lat" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lng">longitude</label>
+              <input class="form-control" type="text" name="" id="lng" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lng"></label>
+              <input
+                class="form-control"
+                type="text"
+                name=""
+                id="location-group-name"
+              />
+            </div>
+            <button
+              type="button"
+              id="storeLocation"
+              class="mt-2 w-100 btn btn-success"
+            >
+              salvar
+            </button>
+            <hr>
+            
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div>
+          <h2>Buscar localização.</h2>
+          <div class="form-group">
+            <label class="form-label" for="lat">latitude</label>
+            <input class="form-control" type="text" name="" id="self-lat" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lng">longitude</label>
+            <input class="form-control" type="text" name="" id="self-lng" />
+          </div>
+          <button id="updateMap" class="mt-2 btn btn-outline-success" type="button">Atualizar mapa</button>
+    </div>
+     
+    </div>
+
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
