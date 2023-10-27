@@ -3,38 +3,20 @@ import { Server } from "socket.io";
 
 import Redis from "ioredis";
 
-// const redisPubConn = createClient({
-//   url: `redis://172.23.0.2:6379`
-// })
 const redisPubConn = new Redis({
-  host: "172.23.0.2",
-  port: 6379,
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+
 });
-// await redisPubConn.connect();
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
   // options
 });
 
-io.on("connection", (socket) => {
-  console.log("nova conexão", socket.id);
+function locationEvents(io, socket){
 
-  // socket.on("register", async ({ id, name, lat, lng }) => {
-  //   console.log("solicitação de registro: ", name);
-
-
-  //   await redisPubConn.geoadd("onlines:", [lng, lat, id]);
-
-  //   socket.emit("add-marker", {
-  //     id,
-  //     name,
-  //     lat,
-  //     lng,
-  //   });
-  // });
-
-  socket.on("register-location", async ({name, lat, lng, key}) => {
+  async function registerLocation ({name, lat, lng, key}){
     console.log("registrar", key);
     await redisPubConn.geoadd(key, [lng, lat, name]);
     socket.emit("add-marker", {
@@ -44,10 +26,9 @@ io.on("connection", (socket) => {
       lng,
       key
     });
-  })
+  }
 
-
-  socket.on("get-around-locations", async ({ lat, lng, radiusInKm, key }) => {
+  async function getAroundLocations ({ lat, lng, radiusInKm, key }){
     console.log("buscar players proximo");
 
     if(lat && lng && radiusInKm && key){
@@ -83,7 +64,30 @@ io.on("connection", (socket) => {
     }
 
     
-  });
+  };
+
+  socket.on("register-location", registerLocation)
+  socket.on("get-around-locations", getAroundLocations)
+}
+
+io.on("connection", (socket) => {
+  console.log("nova conexão: ", socket.id);
+  locationEvents(io, socket)
 });
 
 httpServer.listen(3010);
+
+
+process.on("SIGINT", () => {
+  console.log("servidor terminado");
+  httpServer.close(() => process.exit());
+});
+process.on("SIGTERM", () => {
+  httpServer.close(() => process.exit());
+});
+process.on("uncaughtException", (error, origin) => {
+  console.log(`\n UNCAUGHTEXCEPTION: ORIGIN ${origin} -- ERROR: ${error}`);
+});
+process.on("unhandledRejection", (error) => {
+  console.log(`\n unhandled Promise Rejection: ${error}`);
+})
